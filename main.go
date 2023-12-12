@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -27,16 +28,19 @@ func main() {
 		line := scanner.Text()
 		row := strings.Fields(line)
 
-		fmt.Printf("Name : %s",row[0])
+		cores,err := strconv.Atoi(strings.TrimSuffix(row[1],"m"))
+		handleError(err)
+
+		memory, err := strconv.Atoi(strings.TrimSuffix(row[2],"Mi"))
+		handleError(err)
+
+
+		fmt.Printf("Name : %s\n",row[0])
+		fmt.Printf("CPUCores: %dm\n", cores)
+		fmt.Printf("Memory: %dMi\n", memory)
+		fmt.Println("----------------")
 	}
 
 	
-	// if err = scanner.Err(); handleError(err)
 	
-	// columns := strings.Fields(line)
-
-	// // data := (string(columns))
-	// // test := strings.Split(data," ")
-	// fmt.Println(columns[0])
-
 }
