@@ -1,5 +1,5 @@
 NAME                                 CPU(cores)   MEMORY(bytes)
-appsmith-0                           5m           1691Mi
+appsmith-0                           5m           161Mi
 appsmith-redis-master-0              71m          3Mi
 cms-api-server-55484f97b-dcgr8       1m           305Mi
 cms-api-server-55484f97b-xtb2m       1m           202Mi

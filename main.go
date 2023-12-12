@@ -6,8 +6,16 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
+var (
+	currentCoreValue   int
+	currentMemoryValue int
+	targetPodName      = "cms-api-server-55484f97b-xtb2m" // Set the Name of the Pod to monitor here
+	thresholdMemory    = 203                              // set the threshhols memory value here
+	thresholdCores     = 70                               // srt the threshold core value here
+)
 
 func handleError(err error) {
 	if err != nil {
@@ -15,44 +23,38 @@ func handleError(err error) {
 	}
 }
 
-var(
-	currentCore 	int
-	currentMemory	int
-)
-
 func main() {
-	file, err := os.Open("logs.txt")
-	handleError(err)
-	defer file.Close()
 
-	scanner := bufio.NewScanner(file)
-	targetName := "cms-api-server-55484f97b-xtb2m"
-	// thresholdMemory := 203
-	// threshHoldCores := 70
-	scanner.Scan()
+	for {
+		file, err := os.Open("logs.txt")
+		handleError(err)
 
-
-	for{
-		for scanner.Scan(){
+		scanner := bufio.NewScanner(file)
+		scanner.Scan()
+		for scanner.Scan() {
 			line := scanner.Text()
 			row := strings.Fields(line)
-	
-			if(row[0]==targetName){
-				currentCore,err = strconv.Atoi(strings.TrimSuffix(row[1],"m"))
+
+			if row[0] == targetPodName {
+				currentCoreValue, err = strconv.Atoi(strings.TrimSuffix(row[1], "m"))
 				handleError(err)
-		
-				currentMemory, err = strconv.Atoi(strings.TrimSuffix(row[2],"Mi"))
+
+				currentMemoryValue, err = strconv.Atoi(strings.TrimSuffix(row[2], "Mi"))
 				handleError(err)
-	
-			}else{
-				break
-			}		
-			
+
+			}
 		}
-		fmt.Printf("Name : %s\n",targetName)
-				fmt.Printf("CPUCores: %dm\n", currentCore)
-				fmt.Printf("Memory: %dMi\n", currentMemory)
-				fmt.Println("----------------")
+		file.Close()
+
+		if currentCoreValue > thresholdCores {
+			fmt.Println("Alert: CPU Cores exceeded threshold!")
+		}
+
+		if currentMemoryValue > thresholdMemory {
+			fmt.Println("Alert: Memory exceeded threshold!")
+		}
+
+		time.Sleep(5 * time.Second) // I assumed the script would scan the pods ever 5 sec
 	}
-	
+
 }
